@@ -6,7 +6,7 @@
 
     <p>
     Open this link in another browser window to chat 
-      <code>https://your-url.com/#/chats/{{ chatId }}</code>
+      <code>https://localhost:8080/#/chats/{{ chatId }}</code>
     </p>
 
     <User #user="{ user }">
@@ -18,10 +18,22 @@
         </ul>
 
         <hr />
+        <h5>Upload File</h5>
+        
+        <input type="file" @change="uploadImg" class="form-control-file">
+        <br />
+
+        <hr />
         <h5>Record Audio</h5>
 
         <button v-if="!recorder" @click="record()" class="button is-info">Record Voice</button>
         <button v-else @click="stop()" class="button is-danger">Stop</button>
+
+        <br />
+
+        <img v-if="newImg" :src="newImgURL">
+
+        <hr />
 
         <br />
 
@@ -32,7 +44,7 @@
         <input v-model="newMessageText" class="input" />
 
         <button
-          :disabled="(!newMessageText && !newAudio) || loading"
+          :disabled="(!newMessageText && !newAudio && !newImg) || loading"
           class="button is-success"
           type="text"
           @click="addMessage(user.uid)"
@@ -61,9 +73,10 @@ export default {
       return {
           newMessageText: '',
           loading: false,
-          messages: [],
+          newImg: null,
           newAudio: null,
           recorder: null,
+          messages: []
       }
   },
   computed: {
@@ -75,6 +88,9 @@ export default {
     },
     newAudioURL() {
       return URL.createObjectURL(this.newAudio);
+    },
+    newImgURL() {
+      return URL.createObjectURL(this.newImg);
     }
   },
   firestore() {
@@ -86,10 +102,22 @@ export default {
     async addMessage(uid) {
 
         this.loading = true;
-
+        let imgURL = null;
         let audioURL = null;
 
         const { id: messageId } = this.messagesCollection.doc();
+
+        if (this.newImg) {
+          const storageRef = storage
+            .ref('chats')
+            .child(this.chatId)
+            .child(`${messageId}.png`);
+
+            await storageRef.put(this.newImg);
+
+          imgURL = await storageRef.getDownloadURL();
+          console.log(imgURL);
+        }
 
         if (this.newAudio) {
           const storageRef = storage
@@ -102,17 +130,21 @@ export default {
           audioURL = await storageRef.getDownloadURL();
         }
 
+        
+
 
          await this.messagesCollection.doc(messageId).set({
             text: this.newMessageText,
             sender: uid,
             createdAt: Date.now(),
-            audioURL
+            audioURL,
+            imgURL
         });
 
         this.loading = false;
         this.newMessageText = '';
         this.newAudio = null;
+        this.newURL = null;
     },
     async record() {
       this.newAudio = null;
@@ -142,6 +174,9 @@ export default {
     async stop() {
       this.recorder.stop();
       this.recorder = null;
+    },
+    async uploadImg(e){
+      this.newImg = e.target.files[0];
     }
   }
 };

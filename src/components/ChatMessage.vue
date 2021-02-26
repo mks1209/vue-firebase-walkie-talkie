@@ -1,10 +1,17 @@
 <template>
   <div class="message" :class="{ 'from-user': owner }">
+    <h5>Text</h5>
     {{ message.text }}
     <br />
 
+    <h5>Image</h5>
+    <img v-if="message.imgURL" :src="message.imgURL" >
+    <br />
+
+    <h5>Audio</h5>
     <audio v-if="message.audioURL" :src="message.audioURL" controls></audio>
     <br />
+
 
     <span class="sender">from UID {{ message.sender }}</span>
   </div>
@@ -15,6 +22,7 @@ export default {
     props: ['message', 'owner']
 };
 </script>
+
 <style>
 .message {
   background: #dddddd;

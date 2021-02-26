@@ -1,0 +1,88 @@
+Clone project
+  git clone https://github.com/fireship-io/vue-firebase-walkie-talkie.git
+
+Install vue
+  npm install -g @vue/cli
+
+  if error run below and install again 
+  npm cache clean --force
+
+Allow scripts to run from application
+  run powershell as admin
+  Set-ExecutionPolicy RemoteSigned
+
+Test Vue
+  vue ui
+
+
+
+<head>
+
+    <!-- add this line -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+
+</head>
+
+Install vuefire and firebase
+  npm i vuefire firebase
+
+In main.js
+import { firestorePlugin } from 'vuefire'
+Vue.use(firestorePlugin)
+
+In firebase.js
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/auth';
+import 'firebase/storage';
+
+const firebaseConfig = { 
+    apiKey: "AIzaSyD1mEKwwv4FSBBqzkM4BSSKmzx2f5m94LQ",
+    authDomain: "suhulah-4b253.firebaseapp.com",
+    databaseURL: "https://suhulah-4b253.firebaseio.com",
+    projectId: "suhulah-4b253",
+    storageBucket: "suhulah-4b253.appspot.com",
+    messagingSenderId: "533794448677",
+    appId: "1:533794448677:web:92e3143dfc479de4e2a6cc",
+    measurementId: "G-0LMV2YX8QC"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+export const db = firebase.firestore();
+export const auth = firebase.auth();
+export const storage = firebase.storage();
+
+
+
+npm install vue-router
+
+
+In main.js
+
+import VueRouter from 'vue-router'
+Vue.use(VueRouter)
+
+import Home from './components/Home'
+
+const router = new VueRouter({
+  routes: [
+    { path: '/', component: Home },
+  ]
+})
+
+new Vue({
+  router, 
+  render: h => h(App),
+}).$mount('#app')
+
+
+In app.vue
+<template>
+  <div class="section">
+    <h2>Home.vue</h2>
+  </div>
+</template>
+
+
+
